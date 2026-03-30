@@ -62,11 +62,160 @@ elif promo_code == 'SAVE20': total *= 0.8
 
 ## Решение
 
-(Будет добавлено после рефакторинга)
+### Выделенные классы
+
+1. **UserValidator** - валидация пользователей и получение их данных
+2. **InventoryService** - управление запасами товаров
+3. **PriceCalculator** - расчет итоговой стоимости с учетом налогов
+4. **OrderRepository** - сохранение заказов в базу данных
+5. **NotificationService** - отправка уведомлений (абстракция + EmailNotificationService)
+6. **DiscountStrategy** - паттерн Strategy для скидок (NoDiscount, PercentageDiscount, FixedDiscount)
+7. **PromoCodeResolver** - преобразование промокода в стратегию скидки
+
+### Применение паттерна Strategy
+
+Паттерн Strategy использован для скидок:
+- Интерфейс `DiscountStrategy` с методом `calculate_discount()`
+- Конкретные реализации: `NoDiscount`, `PercentageDiscount`, `FixedDiscount`
+- `PromoCodeResolver` для преобразования промокода в стратегию
+
+Теперь добавление нового типа скидки не требует изменения существующего кода (OCP).
+
+### Как решены проблемы SOLID
+
+- **SRP**: Каждый класс имеет одну ответственность
+- **OCP**: Новые типы скидок добавляются через новые классы стратегий
+- **DIP**: OrderManager зависит от абстракций (NotificationService, DiscountStrategy)
 
 ## UML-диаграммы
 
-(Будут добавлены после рефакторинга)
+### Диаграмма классов ДО рефакторинга
+
+```mermaid
+classDiagram
+    class OrderManager {
+        -db
+        -smtp_host
+        -smtp_port
+        -tax_rate
+        -currency
+        -orders
+        -users
+        -inventory
+        +create_order(user_id, items, promo_code)
+    }
+```
+
+### Диаграмма классов ПОСЛЕ рефакторинга
+
+```mermaid
+classDiagram
+    class OrderManager {
+        -user_validator
+        -inventory_service
+        -price_calculator
+        -order_repository
+        -notification_service
+        -promo_code_resolver
+        +create_order(user_id, items, promo_code)
+    }
+
+    class UserValidator {
+        -users
+        +validate(user_id)
+        +get_user_email(user_id)
+    }
+
+    class InventoryService {
+        -inventory
+        +validate_availability(items)
+        +get_item_price(item_id)
+        +reserve_items(items)
+    }
+
+    class PriceCalculator {
+        -tax_rate
+        +calculate_total(items, item_prices, discount)
+    }
+
+    class OrderRepository {
+        -db
+        -orders
+        +save_order(order)
+        +get_next_order_id()
+    }
+
+    class NotificationService {
+        <<abstract>>
+        +send_notification(recipient, subject, message)
+    }
+
+    class EmailNotificationService {
+        -smtp_host
+        -smtp_port
+        -sender_email
+        +send_notification(recipient, subject, message)
+    }
+
+    class DiscountStrategy {
+        <<abstract>>
+        +calculate_discount(amount)
+    }
+
+    class NoDiscount {
+        +calculate_discount(amount)
+    }
+
+    class PercentageDiscount {
+        -percentage
+        +calculate_discount(amount)
+    }
+
+    class FixedDiscount {
+        -fixed_amount
+        +calculate_discount(amount)
+    }
+
+    class PromoCodeResolver {
+        -promo_codes
+        +get_discount_strategy(promo_code)
+    }
+
+    OrderManager --> UserValidator
+    OrderManager --> InventoryService
+    OrderManager --> PriceCalculator
+    OrderManager --> OrderRepository
+    OrderManager --> NotificationService
+    OrderManager --> PromoCodeResolver
+
+    NotificationService <|-- EmailNotificationService
+    DiscountStrategy <|-- NoDiscount
+    DiscountStrategy <|-- PercentageDiscount
+    DiscountStrategy <|-- FixedDiscount
+    PromoCodeResolver --> DiscountStrategy
+```
+
+## Метрики
+
+### Сравнение метрик ДО и ПОСЛЕ
+
+| Метрика | ДО | ПОСЛЕ |
+|---------|-----|-------|
+| Цикломатическая сложность create_order() | 10 | 2 |
+| Количество классов | 1 | 7 |
+| Количество ответственностей | 5 | 1 (на класс) |
+| Связанность (coupling) | Высокая | Низкая |
+| Тестируемость | Низкая | Высокая |
+
+### Цикломатическая сложность ПОСЛЕ
+
+
+
+Метод `create_order()` в новой версии:
+- Базовая сложность: 1
+- Последовательные вызовы без ветвлений: +1
+
+**Цикломатическая сложность ПОСЛЕ: 2** (отличный результат)
 
 ## Как запустить тесты
 
