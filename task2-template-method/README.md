@@ -73,11 +73,195 @@ if (data.isEmpty()) {
 
 ## Решение
 
-(Будет добавлено после рефакторинга)
+### Применение паттернов
+
+#### 1. Template Method
+Абстрактный класс `AbstractReportGenerator<T>` определяет скелет алгоритма генерации отчета в методе `generate()` (final):
+- Получить заголовок
+- Загрузить данные
+- Проверить на пустоту
+- Форматировать каждую строку
+- Добавить итоги
+- Постобработка
+
+Конкретные классы переопределяют только специфичные шаги:
+- `SalesReportGenerator`
+- `InventoryReportGenerator`
+- `FinancialReportGenerator` (новый тип отчета)
+
+#### 2. Strategy для форматирования
+Интерфейс `ReportFormatter` с реализациями:
+- `TextFormatter` - текстовый формат
+- `CsvFormatter` - CSV формат
+- `HtmlFormatter` - HTML формат
+
+Теперь можно менять формат отчета без изменения генераторов.
+
+#### 3. Chain of Responsibility для постобработки
+Абстрактный класс `ReportHandler` с цепочкой обработчиков:
+- `LogHandler` - логирование
+- `EmailHandler` - отправка email
+- `ArchiveHandler` - архивирование
+
+Обработчики можно комбинировать в любом порядке.
+
+### Как решены проблемы
+
+- **DRY**: Общий алгоритм вынесен в AbstractReportGenerator
+- **Shotgun Surgery**: Изменения в алгоритме делаются только в одном месте
+- **OCP**: Новые типы отчетов, форматов и обработчиков добавляются через наследование
+- **Гибкость**: Можно динамически менять форматы и постобработку
 
 ## UML-диаграммы
 
-(Будут добавлены после рефакторинга)
+### Диаграмма классов ДО рефакторинга
+
+```mermaid
+classDiagram
+    class SalesReportGenerator {
+        -db: DatabaseConnection
+        -logger: Logger
+        -emailService: EmailService
+        +generate(from, to): String
+    }
+
+    class InventoryReportGenerator {
+        -db: DatabaseConnection
+        -logger: Logger
+        -emailService: EmailService
+        +generate(from, to): String
+    }
+
+    SalesReportGenerator --> DatabaseConnection
+    SalesReportGenerator --> Logger
+    SalesReportGenerator --> EmailService
+    InventoryReportGenerator --> DatabaseConnection
+    InventoryReportGenerator --> Logger
+    InventoryReportGenerator --> EmailService
+```
+
+### Диаграмма классов ПОСЛЕ рефакторинга
+
+```mermaid
+classDiagram
+    class AbstractReportGenerator {
+        <<abstract>>
+        #db: DatabaseConnection
+        #formatter: ReportFormatter
+        #postProcessHandler: ReportHandler
+        +generate(from, to): String
+        #getTitle(): String*
+        #fetchData(from, to): List~T~*
+        #formatRow(item): String*
+        #addSummary(data): String*
+        #getRecipient(): String*
+    }
+
+    class SalesReportGenerator {
+        +getTitle(): String
+        +fetchData(from, to): List~Sale~
+        +formatRow(item): String
+        +addSummary(data): String
+        +getRecipient(): String
+    }
+
+    class InventoryReportGenerator {
+        +getTitle(): String
+        +fetchData(from, to): List~Item~
+        +formatRow(item): String
+        +addSummary(data): String
+        +getRecipient(): String
+    }
+
+    class FinancialReportGenerator {
+        +getTitle(): String
+        +fetchData(from, to): List~Transaction~
+        +formatRow(item): String
+        +addSummary(data): String
+        +getRecipient(): String
+    }
+
+    class ReportFormatter {
+        <<interface>>
+        +format(title, from, to, content, summary): String
+        +formatEmpty(title, from, to): String
+    }
+
+    class TextFormatter {
+        +format(...): String
+        +formatEmpty(...): String
+    }
+
+    class CsvFormatter {
+        +format(...): String
+        +formatEmpty(...): String
+    }
+
+    class HtmlFormatter {
+        +format(...): String
+        +formatEmpty(...): String
+    }
+
+    class ReportHandler {
+        <<abstract>>
+        #nextHandler: ReportHandler
+        +setNext(handler): ReportHandler
+        +handle(report, recipient): void
+        #process(report, recipient): void*
+    }
+
+    class LogHandler {
+        -logger: Logger
+        +process(report, recipient): void
+    }
+
+    class EmailHandler {
+        -emailService: EmailService
+        +process(report, recipient): void
+    }
+
+    class ArchiveHandler {
+        -archivePath: String
+        +process(report, recipient): void
+    }
+
+    AbstractReportGenerator <|-- SalesReportGenerator
+    AbstractReportGenerator <|-- InventoryReportGenerator
+    AbstractReportGenerator <|-- FinancialReportGenerator
+    AbstractReportGenerator --> ReportFormatter
+    AbstractReportGenerator --> ReportHandler
+
+    ReportFormatter <|.. TextFormatter
+    ReportFormatter <|.. CsvFormatter
+    ReportFormatter <|.. HtmlFormatter
+
+    ReportHandler <|-- LogHandler
+    ReportHandler <|-- EmailHandler
+    ReportHandler <|-- ArchiveHandler
+    ReportHandler --> ReportHandler: nextHandler
+```
+
+## Метрики
+
+### Сравнение WMC (Weighted Methods per Class)
+
+| Класс | ДО | ПОСЛЕ |
+|-------|-----|-------|
+| SalesReportGenerator | 3 | 5 (но проще) |
+| InventoryReportGenerator | 2 | 5 (но проще) |
+| FinancialReportGenerator | - | 5 |
+| AbstractReportGenerator | - | 1 (generate final) |
+| Форматтеры (3 класса) | 0 | 2 каждый |
+| Обработчики (3 класса) | 0 | 2 каждый |
+
+**Общая WMC системы:**
+- ДО: 5 (2 класса)
+- ПОСЛЕ: 24 (10 классов)
+
+**Важно:** Хотя общее число выросло, каждый метод стал проще. Система теперь:
+- Легко расширяется (новые отчеты, форматы, обработчики)
+- Легко тестируется (каждый класс независим)
+- Соответствует принципам SOLID
 
 ## Как запустить
 
