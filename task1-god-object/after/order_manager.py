@@ -34,7 +34,7 @@ class OrderManager:
         subtotal = sum(item_prices[item_id] * qty for item_id, qty in items.items())
         discount = discount_strategy.calculate_discount(subtotal)
 
-        total = self.price_calculator.calculate_total(items, item_prices, discount)
+        total = self.price_calculator.calculate_total(subtotal, discount)
 
         self.inventory_service.reserve_items(items)
 

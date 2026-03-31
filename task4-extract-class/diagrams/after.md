@@ -59,15 +59,19 @@ classDiagram
 
     class SalaryCalculator {
         -baseSalary: double
-        -bonus: double
+        -overtimeHours: int
         -taxRate: double
+        -pensionRate: double
+        -healthInsuranceRate: double
         +SalaryCalculator(...)
         +calculateNetSalary(): double
         +calculateGrossSalary(): double
-        +updateSalary(double, double, double): void
+        +updateSalary(double, int, double, double, double): void
         +getBaseSalary(): double
-        +getBonus(): double
+        +getOvertimeHours(): int
         +getTaxRate(): double
+        +getPensionRate(): double
+        +getHealthInsuranceRate(): double
     }
 
     Employee --> Address
@@ -77,5 +81,5 @@ classDiagram
     note for Employee "9 полей\n13 методов\nLCOM = 1\n\nВысокая связность"
     note for Address "Immutable\nLCOM = 1\nПовторное использование"
     note for BankDetails "Immutable\nLCOM = 1\nВалидация"
-    note for SalaryCalculator "LCOM = 1\nРасширяемость"
+    note for SalaryCalculator "LCOM = 1\nФормула с сверхурочными\nРасширяемость"
 ```

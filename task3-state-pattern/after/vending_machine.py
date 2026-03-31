@@ -24,3 +24,12 @@ class VendingMachine:
 
     def refill(self, product_id: str, quantity: int) -> None:
         self.state.refill(self, product_id, quantity)
+
+    def enter_maintenance(self) -> None:
+        """Перейти в режим обслуживания."""
+        from maintenance_state import MaintenanceState
+        self.set_state(MaintenanceState())
+
+    def exit_maintenance(self) -> None:
+        """Выйти из режима обслуживания."""
+        self.set_state(IdleState())

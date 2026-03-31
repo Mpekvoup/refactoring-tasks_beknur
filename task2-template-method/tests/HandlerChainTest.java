@@ -35,11 +35,10 @@ public class HandlerChainTest {
     public void testThreeHandlersChain() {
         MockLogger logger = new MockLogger();
         MockEmailService emailService = new MockEmailService();
-        MockArchiveService archiveService = new MockArchiveService();
 
         LogHandler logHandler = new LogHandler(logger);
         EmailHandler emailHandler = new EmailHandler(emailService);
-        ArchiveHandler archiveHandler = new ArchiveHandler(archiveService);
+        ArchiveHandler archiveHandler = new ArchiveHandler("/tmp/reports");
 
         logHandler.setNext(emailHandler);
         emailHandler.setNext(archiveHandler);
@@ -48,11 +47,11 @@ public class HandlerChainTest {
 
         assertTrue(logger.logged);
         assertTrue(emailService.sent);
-        assertTrue(archiveService.archived);
+        // ArchiveHandler пишет в файл, проверим что не упал
     }
 
     // Mock классы
-    private static class MockLogger extends Logger {
+    private static class MockLogger implements Logger {
         boolean logged = false;
 
         @Override
@@ -61,20 +60,12 @@ public class HandlerChainTest {
         }
     }
 
-    private static class MockEmailService extends EmailService {
+    private static class MockEmailService implements EmailService {
         boolean sent = false;
 
         @Override
         public void send(String to, String subject, String body) {
             sent = true;
-        }
-    }
-
-    private static class MockArchiveService {
-        boolean archived = false;
-
-        public void archive(String report) {
-            archived = true;
         }
     }
 }

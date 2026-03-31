@@ -58,24 +58,24 @@ public class SalesReportGeneratorTest {
     }
 
     // Mock классы
-    private static class MockDatabaseConnection extends DatabaseConnection {
+    private static class MockDatabaseConnection implements DatabaseConnection {
         @Override
-        public List query(String sql, Object... params) {
+        public <T> List<T> query(String sql, Date from, Date to) {
             List<Sale> sales = new ArrayList<>();
             sales.add(new Sale(1, 100.0));
             sales.add(new Sale(2, 200.0));
-            return sales;
+            return (List<T>) sales;
         }
     }
 
-    private static class EmptyMockDatabaseConnection extends DatabaseConnection {
+    private static class EmptyMockDatabaseConnection implements DatabaseConnection {
         @Override
-        public List query(String sql, Object... params) {
+        public <T> List<T> query(String sql, Date from, Date to) {
             return new ArrayList<>();
         }
     }
 
-    private static class MockLogger extends Logger {
+    private static class MockLogger implements Logger {
         @Override
         public void info(String message) {
             // Mock: ничего не делаем

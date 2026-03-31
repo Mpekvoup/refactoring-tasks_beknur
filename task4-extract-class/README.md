@@ -25,13 +25,15 @@ private String routingNumber;
 ```
 Связаны логически, используются вместе в `getBankDetails()`, `updateBankInfo()`, `validateBankAccount()`.
 
-**Группа 3: Данные зарплаты (строки 20-22)**
+**Группа 3: Данные зарплаты (строки 20-22 + строки 7-8)**
 ```java
 private double baseSalary;
-private double bonus;
+private int overtimeHours;
 private double taxRate;
+private double pensionRate;
+private double healthInsuranceRate;
 ```
-Используются вместе в `calculateNetSalary()` и `updateSalary()`.
+Используются вместе в `calculateNetSalary()` и `updateSalary()`. Формула расчета включает сверхурочные часы и дополнительные отчисления.
 
 #### 2. Large Class
 Класс содержит 16 полей и отвечает за слишком много аспектов:
