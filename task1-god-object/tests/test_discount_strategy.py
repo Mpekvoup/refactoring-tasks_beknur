@@ -1,7 +1,10 @@
 import pytest
-import sys
-sys.path.insert(0, '../after')
-from discount_strategy import NoDiscount, PercentageDiscount, FixedDiscount, PromoCodeResolver
+from discount_strategy import (
+    NoDiscount,
+    PercentageDiscount,
+    FixedDiscount,
+    PromoCodeResolver,
+)
 
 
 def test_no_discount():
@@ -31,21 +34,21 @@ def test_fixed_discount_exceeds_amount():
 
 def test_promo_code_resolver_save10():
     resolver = PromoCodeResolver()
-    strategy = resolver.get_discount_strategy('SAVE10')
+    strategy = resolver.get_discount_strategy("SAVE10")
     assert isinstance(strategy, PercentageDiscount)
     assert strategy.calculate_discount(100.0) == 0.1
 
 
 def test_promo_code_resolver_save20():
     resolver = PromoCodeResolver()
-    strategy = resolver.get_discount_strategy('SAVE20')
+    strategy = resolver.get_discount_strategy("SAVE20")
     assert isinstance(strategy, PercentageDiscount)
     assert strategy.calculate_discount(100.0) == 0.2
 
 
 def test_promo_code_resolver_invalid_code():
     resolver = PromoCodeResolver()
-    strategy = resolver.get_discount_strategy('INVALID')
+    strategy = resolver.get_discount_strategy("INVALID")
     assert isinstance(strategy, NoDiscount)
 
 

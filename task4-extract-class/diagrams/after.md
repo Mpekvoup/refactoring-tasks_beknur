@@ -77,9 +77,4 @@ classDiagram
     Employee --> Address
     Employee --> BankDetails
     Employee --> SalaryCalculator
-
-    note for Employee "9 полей\n13 методов\nLCOM = 1\n\nВысокая связность"
-    note for Address "Immutable\nLCOM = 1\nПовторное использование"
-    note for BankDetails "Immutable\nLCOM = 1\nВалидация"
-    note for SalaryCalculator "LCOM = 1\nФормула с сверхурочными\nРасширяемость"
 ```

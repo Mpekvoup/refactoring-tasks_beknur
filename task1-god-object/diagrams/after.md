@@ -27,7 +27,7 @@ classDiagram
 
     class PriceCalculator {
         -tax_rate
-        +calculate_total(items, item_prices, discount)
+        +calculate_total(subtotal, discount)
     }
 
     class OrderRepository {

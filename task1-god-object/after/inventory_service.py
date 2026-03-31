@@ -1,6 +1,5 @@
 from typing import Dict, Any
 
-
 class InventoryService:
     def __init__(self, inventory: Dict[str, Dict[str, Any]]):
         self.inventory = inventory

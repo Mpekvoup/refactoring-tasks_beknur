@@ -12,15 +12,11 @@ public class Employee {
     private Date birthDate;
     private String email;
     private String phone;
-
-    // Агрегированные объекты
     private Address address;
     private BankDetails bankDetails;
     private SalaryCalculator salaryCalculator;
 
-    /**
-     * Конструктор сотрудника с агрегированными объектами.
-     */
+
     public Employee(String id, String firstName, String lastName, Date birthDate,
                    String email, String phone,
                    Address address,
@@ -114,16 +110,12 @@ public class Employee {
                             double pensionRate, double healthInsuranceRate) {
         salaryCalculator.updateSalary(baseSalary, overtimeHours, taxRate, pensionRate, healthInsuranceRate);
     }
-
-    // Геттеры для личных данных
     public String getId() { return id; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
     public Date getBirthDate() { return birthDate; }
     public String getEmail() { return email; }
     public String getPhone() { return phone; }
-
-    // Геттеры для агрегированных объектов
     public Address getAddress() { return address; }
     public BankDetails getBankDetails() { return bankDetails; }
     public SalaryCalculator getSalaryCalculator() { return salaryCalculator; }
