@@ -105,11 +105,14 @@ public class Employee {
     /**
      * Обновление параметров зарплаты.
      * @param baseSalary новая базовая зарплата
-     * @param bonus новый бонус
+     * @param overtimeHours новые часы сверхурочной работы
      * @param taxRate новая налоговая ставка
+     * @param pensionRate новая ставка пенсионных отчислений
+     * @param healthInsuranceRate новая ставка медицинского страхования
      */
-    public void updateSalary(double baseSalary, double bonus, double taxRate) {
-        salaryCalculator.updateSalary(baseSalary, bonus, taxRate);
+    public void updateSalary(double baseSalary, int overtimeHours, double taxRate,
+                            double pensionRate, double healthInsuranceRate) {
+        salaryCalculator.updateSalary(baseSalary, overtimeHours, taxRate, pensionRate, healthInsuranceRate);
     }
 
     // Геттеры для личных данных

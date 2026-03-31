@@ -1,8 +1,5 @@
 """Тесты для HttpRequestBuilder."""
 import pytest
-import sys
-sys.path.insert(0, '../after')
-
 from http_request import HttpRequest, HttpRequestBuilder
 
 

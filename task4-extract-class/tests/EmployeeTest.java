@@ -18,7 +18,7 @@ public class EmployeeTest {
     public void setUp() {
         address = new Address("123 Main St", "New York", "10001", "USA");
         bankDetails = new BankDetails("Chase Bank", "12345678", "123456789");
-        salaryCalculator = new SalaryCalculator(50000, 10000, 0.2);
+        salaryCalculator = new SalaryCalculator(16000, 20, 0.2, 0.05, 0.03);
 
         employee = new Employee(
             "E001",
@@ -54,7 +54,9 @@ public class EmployeeTest {
 
     @Test
     public void testCalculateNetSalary() {
-        assertEquals(48000.0, employee.calculateNetSalary(), DELTA);
+        // gross = 16000 + (20 * 16000 / 160 * 1.5) = 19000
+        // net = 19000 - (19000 * 0.28) = 13680
+        assertEquals(13680.0, employee.calculateNetSalary(), DELTA);
     }
 
     @Test
@@ -62,7 +64,7 @@ public class EmployeeTest {
         String payroll = employee.formatForPayroll();
         assertTrue(payroll.contains("E001"));
         assertTrue(payroll.contains("John Doe"));
-        assertTrue(payroll.contains("48000.0"));
+        assertTrue(payroll.contains("13680.0"));
         assertTrue(payroll.contains("Chase Bank"));
         assertTrue(payroll.contains("12345678"));
     }
@@ -91,9 +93,10 @@ public class EmployeeTest {
 
     @Test
     public void testUpdateSalary() {
-        employee.updateSalary(60000, 15000, 0.25);
-        // gross = 75000, tax = 18750, net = 56250
-        assertEquals(56250.0, employee.calculateNetSalary(), DELTA);
+        employee.updateSalary(18000, 10, 0.25, 0.06, 0.04);
+        // gross = 18000 + (10 * 18000 / 160 * 1.5) = 19687.5
+        // net = 19687.5 - (19687.5 * 0.35) = 12796.875
+        assertEquals(12796.875, employee.calculateNetSalary(), DELTA);
     }
 
     @Test(expected = IllegalArgumentException.class)

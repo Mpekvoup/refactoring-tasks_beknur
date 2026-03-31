@@ -4,32 +4,43 @@
  */
 public class SalaryCalculator {
     private double baseSalary;
-    private double bonus;
+    private int overtimeHours;
     private double taxRate;
+    private double pensionRate;
+    private double healthInsuranceRate;
 
     /**
      * Конструктор калькулятора зарплаты.
      * @param baseSalary базовая зарплата
-     * @param bonus бонус
+     * @param overtimeHours часы сверхурочной работы
      * @param taxRate налоговая ставка (0.0 - 1.0)
+     * @param pensionRate ставка пенсионных отчислений (0.0 - 1.0)
+     * @param healthInsuranceRate ставка медицинского страхования (0.0 - 1.0)
      */
-    public SalaryCalculator(double baseSalary, double bonus, double taxRate) {
-        if (baseSalary < 0 || bonus < 0 || taxRate < 0 || taxRate > 1) {
+    public SalaryCalculator(double baseSalary, int overtimeHours, double taxRate,
+                           double pensionRate, double healthInsuranceRate) {
+        if (baseSalary < 0 || overtimeHours < 0 || taxRate < 0 || taxRate > 1 ||
+            pensionRate < 0 || pensionRate > 1 || healthInsuranceRate < 0 || healthInsuranceRate > 1) {
             throw new IllegalArgumentException("Invalid salary parameters");
         }
         this.baseSalary = baseSalary;
-        this.bonus = bonus;
+        this.overtimeHours = overtimeHours;
         this.taxRate = taxRate;
+        this.pensionRate = pensionRate;
+        this.healthInsuranceRate = healthInsuranceRate;
     }
 
     /**
-     * Расчет чистой зарплаты (gross - налоги).
-     * @return чистая зарплата после вычета налогов
+     * Расчет чистой зарплаты (gross - налоги - пенсия - медстраховка).
+     * Формула из исходного задания.
+     * @return чистая зарплата после вычета налогов и отчислений
      */
     public double calculateNetSalary() {
-        double gross = baseSalary + bonus;
+        double gross = baseSalary + (overtimeHours * baseSalary / 160 * 1.5);
         double tax = gross * taxRate;
-        return gross - tax;
+        double pension = gross * pensionRate;
+        double health = gross * healthInsuranceRate;
+        return gross - tax - pension - health;
     }
 
     /**
@@ -37,25 +48,33 @@ public class SalaryCalculator {
      * @return валовая зарплата до вычета налогов
      */
     public double calculateGrossSalary() {
-        return baseSalary + bonus;
+        return baseSalary + (overtimeHours * baseSalary / 160 * 1.5);
     }
 
     /**
      * Обновление параметров зарплаты.
      * @param baseSalary новая базовая зарплата
-     * @param bonus новый бонус
+     * @param overtimeHours новые часы сверхурочной работы
      * @param taxRate новая налоговая ставка
+     * @param pensionRate новая ставка пенсионных отчислений
+     * @param healthInsuranceRate новая ставка медицинского страхования
      */
-    public void updateSalary(double baseSalary, double bonus, double taxRate) {
-        if (baseSalary < 0 || bonus < 0 || taxRate < 0 || taxRate > 1) {
+    public void updateSalary(double baseSalary, int overtimeHours, double taxRate,
+                            double pensionRate, double healthInsuranceRate) {
+        if (baseSalary < 0 || overtimeHours < 0 || taxRate < 0 || taxRate > 1 ||
+            pensionRate < 0 || pensionRate > 1 || healthInsuranceRate < 0 || healthInsuranceRate > 1) {
             throw new IllegalArgumentException("Invalid salary parameters");
         }
         this.baseSalary = baseSalary;
-        this.bonus = bonus;
+        this.overtimeHours = overtimeHours;
         this.taxRate = taxRate;
+        this.pensionRate = pensionRate;
+        this.healthInsuranceRate = healthInsuranceRate;
     }
 
     public double getBaseSalary() { return baseSalary; }
-    public double getBonus() { return bonus; }
+    public int getOvertimeHours() { return overtimeHours; }
     public double getTaxRate() { return taxRate; }
+    public double getPensionRate() { return pensionRate; }
+    public double getHealthInsuranceRate() { return healthInsuranceRate; }
 }

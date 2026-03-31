@@ -3,18 +3,24 @@
 """
 import sys
 import timeit
+from pathlib import Path
 
-sys.path.insert(0, '../before')
+# Импорт старого подхода
+before_dir = Path(__file__).parent.parent / "before"
+sys.path.insert(0, str(before_dir))
 from http_request import HttpRequest as OldHttpRequest
 from http_request import execute_request as old_execute
+sys.path.pop(0)
 
-sys.path.pop()
-sys.path.insert(0, '../after')
+# Импорт нового подхода
+after_dir = Path(__file__).parent.parent / "after"
+sys.path.insert(0, str(after_dir))
 from http_request import HttpRequestBuilder
 from middleware import (
     LoggingMiddleware, AuthMiddleware, CacheMiddleware,
     RetryMiddleware, CompressionMiddleware, MiddlewareChain
 )
+sys.path.pop(0)
 
 
 def benchmark_old_approach():

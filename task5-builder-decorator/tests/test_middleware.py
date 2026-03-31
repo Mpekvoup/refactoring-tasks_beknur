@@ -1,7 +1,4 @@
 """Тесты для middleware."""
-import sys
-sys.path.insert(0, '../after')
-
 from http_request import HttpRequest, HttpRequestBuilder
 from middleware import (
     Middleware, NullMiddleware, LoggingMiddleware,

@@ -30,15 +30,15 @@ class Middleware(ABC):
         Returns:
             Результат выполнения цепочки
         """
-        result = self._process(request)
+        self._process(request)
 
         if self._next_handler:
             return self._next_handler.handle(request)
 
-        return result
+        return {"status": 200, "body": "response", "request": request}
 
     @abstractmethod
-    def _process(self, request: HttpRequest) -> Dict[str, Any]:
+    def _process(self, request: HttpRequest) -> None:
         """Обработать запрос (реализуется в подклассах)."""
         pass
 
@@ -46,68 +46,49 @@ class Middleware(ABC):
 class NullMiddleware(Middleware):
     """Null Object - пустой middleware, ничего не делает."""
 
-    def _process(self, request: HttpRequest) -> Dict[str, Any]:
-        return {"status": 200, "body": "response", "request": request}
+    def _process(self, request: HttpRequest) -> None:
+        pass
 
 
 class LoggingMiddleware(Middleware):
     """Middleware для логирования запросов."""
 
-    def _process(self, request: HttpRequest) -> Dict[str, Any]:
+    def _process(self, request: HttpRequest) -> None:
         print(f"[LOG] {request.method} {request.url}")
-        if self._next_handler:
-            return self._next_handler.handle(request)
-        return {"status": 200, "body": "response", "request": request}
 
 
 class AuthMiddleware(Middleware):
     """Middleware для добавления аутентификации."""
 
-    def _process(self, request: HttpRequest) -> Dict[str, Any]:
+    def _process(self, request: HttpRequest) -> None:
         if request.auth_token:
             print(f"[AUTH] Adding auth token")
             request.headers['Authorization'] = f"Bearer {request.auth_token}"
-
-        if self._next_handler:
-            return self._next_handler.handle(request)
-        return {"status": 200, "body": "response", "request": request}
 
 
 class CacheMiddleware(Middleware):
     """Middleware для кеширования ответов."""
 
-    def _process(self, request: HttpRequest) -> Dict[str, Any]:
+    def _process(self, request: HttpRequest) -> None:
         if request.cache_ttl > 0:
             print(f"[CACHE] Caching for {request.cache_ttl} seconds")
-
-        if self._next_handler:
-            return self._next_handler.handle(request)
-        return {"status": 200, "body": "response", "request": request}
 
 
 class RetryMiddleware(Middleware):
     """Middleware для повторных попыток."""
 
-    def _process(self, request: HttpRequest) -> Dict[str, Any]:
+    def _process(self, request: HttpRequest) -> None:
         if request.retries > 0:
             print(f"[RETRY] Max retries: {request.retries}")
-
-        if self._next_handler:
-            return self._next_handler.handle(request)
-        return {"status": 200, "body": "response", "request": request}
 
 
 class CompressionMiddleware(Middleware):
     """Middleware для сжатия данных."""
 
-    def _process(self, request: HttpRequest) -> Dict[str, Any]:
+    def _process(self, request: HttpRequest) -> None:
         if request.compression:
             print(f"[COMPRESS] Using {request.compression}")
             request.headers['Accept-Encoding'] = request.compression
-
-        if self._next_handler:
-            return self._next_handler.handle(request)
-        return {"status": 200, "body": "response", "request": request}
 
 
 class MiddlewareChain:

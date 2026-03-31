@@ -10,6 +10,7 @@ class NotificationService(ABC):
 class EmailNotificationService(NotificationService):
     def __init__(self, smtp_host: str, smtp_port: int, sender_email: str):
         self.smtp_host = smtp_host
+        
         self.smtp_port = smtp_port
         self.sender_email = sender_email
 
